@@ -72,16 +72,26 @@ int main()
 		fd_set readable;
 		FD_ZERO(&readable);
 
+
+		fd_set writeable;
+		FD_ZERO(&writeable);
+
+
 		// Add the server socket, which will become "readable" if there's a new
 		// connection to accept.
 		FD_SET(serverSocket, &readable);
 
 		// Add all of the connected clients' sockets.
-		for (auto conn: conns)
+		for (auto conn: conns )
 		{
 			if (conn->wantRead())
 			{
 				FD_SET(conn->sock(), &readable);
+			}
+			else
+			if (conn->wantWrite())
+			{
+				FD_SET(conn->sock(), &writeable);
 			}
 		}
 
@@ -94,7 +104,7 @@ int main()
 		// Wait for one of the sockets to become readable.
 		// (We can only get away with passing 0 for the first argument here because
 		// we're on Windows -- other sockets implementations need a proper value there.)
-		int count = select(0, &readable, NULL, NULL, &timeout);
+		int count = select(0, &readable, &readable, NULL, &timeout);
 		if (count == SOCKET_ERROR)
 		{
 			die("select failed");
@@ -111,7 +121,7 @@ int main()
 			// also fills in an address structure with the client's address.
 			sockaddr_in clientAddr;
 			int addrSize = sizeof(clientAddr);
-			SOCKET clientSocket = accept(serverSocket, (sockaddr *) &clientAddr, &addrSize);
+			SOCKET clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &addrSize);
 			if (clientSocket == INVALID_SOCKET)
 			{
 				printf("accept failed\n");
@@ -121,7 +131,7 @@ int main()
 			// Create a new Connection object, and add it to the collection.
 			conns.push_back(new Connection(clientSocket));
 		}
-
+		
 		// Check each of the clients.
 		for (auto it = conns.begin(); it != conns.end(); )  // note no ++it here
 		{
@@ -132,6 +142,12 @@ int main()
 			if (FD_ISSET(conn->sock(), &readable))
 			{
 				dead |= conn->doRead();
+			}
+
+			// Is there data to written to this client's socket?
+			if (FD_ISSET(conn->sock(), &writeable))
+			{
+				dead |= conn->doWrite();
 			}
 
 			if (dead)

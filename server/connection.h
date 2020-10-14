@@ -30,6 +30,13 @@ public:
 	// Call this when the socket is ready to read.
 	bool doRead();
 
+
+	// Return whether this connection is in a state where we want to try
+	// writing from the socket.
+	bool wantWrite();
+
+	// Call this when the socket is ready to write.
+	bool doWrite();
 private:
 	// This client's socket.
 	SOCKET sock_;
@@ -37,6 +44,10 @@ private:
 	// The data we've read from the client.
 	int readCount_;
 	char readBuffer_[MESSAGESIZE];
+
+	// The data we're sending to the client.
+	int writeCount_;
+	char writeBuffer_[MESSAGESIZE];
 };
 
 #endif

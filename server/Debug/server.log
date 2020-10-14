@@ -1,5 +1,4 @@
 ﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
-  utils.cpp
   server.cpp
 C:\Users\User\Documents\C++\Networking\networking-IO-multiplexing\server\server.cpp(43,31): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
 C:\Users\User\Documents\C++\Networking\networking-IO-multiplexing\server\server.cpp(54,57): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings

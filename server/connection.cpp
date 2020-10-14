@@ -82,3 +82,19 @@ bool Connection::doRead()
 
 	return false;
 }
+
+// Return whether this connection is in a state where we want to try
+// writing to the socket.
+bool Connection::wantWrite()
+{
+
+	// At present, we always do.
+	return true;
+}
+
+// Call this when the socket is ready to write.
+bool Connection::doWrite()
+{
+//FIXME::
+	return false;
+}
