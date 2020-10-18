@@ -128,6 +128,12 @@ int main()
 				continue;
 			}
 
+			if(conns.size()>1)
+			{
+				printf("server full\n");
+				closesocket(serverSocket);
+			}
+
 			// Create a new Connection object, and add it to the collection.
 			conns.push_back(new Connection(clientSocket));
 		}
