@@ -104,7 +104,7 @@ int main()
 		// Wait for one of the sockets to become readable.
 		// (We can only get away with passing 0 for the first argument here because
 		// we're on Windows -- other sockets implementations need a proper value there.)
-		int count = select(0, &readable, &readable, NULL, &timeout);
+		int count = select(0, &readable, &writeable, NULL, &timeout);
 		if (count == SOCKET_ERROR)
 		{
 			die("select failed");
@@ -122,20 +122,23 @@ int main()
 			sockaddr_in clientAddr;
 			int addrSize = sizeof(clientAddr);
 			SOCKET clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &addrSize);
+
 			if (clientSocket == INVALID_SOCKET)
 			{
 				printf("accept failed\n");
 				continue;
 			}
 
-			if(conns.size()>1)
+			if (conns.size() > 1)
 			{
 				printf("server full\n");
-				closesocket(serverSocket);
+				closesocket(clientSocket);
 			}
-
-			// Create a new Connection object, and add it to the collection.
-			conns.push_back(new Connection(clientSocket));
+			else
+			{
+				// Create a new Connection object, and add it to the collection.
+				conns.push_back(new Connection(clientSocket));
+			}
 		}
 		
 		// Check each of the clients.
@@ -167,6 +170,7 @@ int main()
 			{
 				++it;
 			}
+			
 		}
 	}
 

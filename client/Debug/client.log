@@ -1,7 +1,1 @@
-﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
-  utils.cpp
-  client.cpp
-C:\Users\User\Documents\C++\Networking\networking-IO-multiplexing\client\client.cpp(50,25): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-C:\Users\User\Documents\C++\Networking\networking-IO-multiplexing\client\client.cpp(53,43): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  Generating Code...
-  client.vcxproj -> C:\Users\User\Documents\C++\Networking\networking-IO-multiplexing\client\.\Debug\client.exe
+﻿  client.vcxproj -> \\StuHomeEven\HomeDrive8$\1901418\GitHub\networking-IO-multiplexing\client\.\Debug\client.exe

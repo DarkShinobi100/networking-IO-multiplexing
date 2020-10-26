@@ -37,6 +37,8 @@ public:
 
 	// Call this when the socket is ready to write.
 	bool doWrite();
+
+	void busy();
 private:
 	// This client's socket.
 	SOCKET sock_;
@@ -48,6 +50,7 @@ private:
 	// The data we're sending to the client.
 	int writeCount_;
 	char writeBuffer_[MESSAGESIZE];
+
 };
 
 #endif

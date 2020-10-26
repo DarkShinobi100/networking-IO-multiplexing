@@ -8,6 +8,10 @@
 #pragma comment(lib, "ws2_32.lib")
 
 
+
+// The message the server will send when the server is busy
+#define QUIT "quit"
+
 // Constructor.
 // sock: the socket that we've accepted the client connection on.
 Connection::Connection(SOCKET sock)
@@ -96,5 +100,74 @@ bool Connection::wantWrite()
 bool Connection::doWrite()
 {
 //FIXME::
+
+		// Receive as much data from the client as will fit in the buffer.
+	int spaceLeft = (sizeof writeBuffer_) - writeCount_;
+	int count = send(sock_, writeBuffer_ + writeCount_, spaceLeft, 0);
+	if (count <= 0) {
+		printf("Client connection closed or broken\n");
+		return true;
+	}
+
+	// We've successfully write some more data into the buffer.
+	writeCount_ += count;
+
+	if (writeCount_ < MESSAGESIZE) {
+		// ... but we've not received a complete message yet.
+		// So we can't do anything until we receive some more.
+		return false;
+	}
+
+	// We've got a complete message.
+	printf("Received message from the client: '");
+	fwrite(writeBuffer_, 1, MESSAGESIZE, stdout);
+	printf("'\n");
+
+	if (memcmp(writeBuffer_, "quit", 4) == 0) {
+		printf("Client asked to quit\n");
+		return true;
+	}
+
+	// Send the same data back to the client.
+	// FIXME: the socket might not be writey to send yet -- so this could block!
+	// FIXME: and we might not be able to write the entire message in one go...
+	count = send(sock_, writeBuffer_, MESSAGESIZE, 0);
+	if (count != MESSAGESIZE)
+	{
+		printf("send failed\n");
+		return true;
+	}
+
+	// Clear the buffer, ready for the next message.
+	writeCount_ = 0;
+
 	return false;
+}
+
+void Connection::busy()
+{
+	
+	// Fill the buffer with - characters to start with.
+	memset(readBuffer_, '-', MESSAGESIZE);
+
+	// Send a welcome message to the client.
+	memcpy(readBuffer_, QUIT, strlen(QUIT));
+
+	memset(readBuffer_, 'quit', MESSAGESIZE);
+
+	if (memcmp(readBuffer_, "quit", 4) == 0) {
+		printf("Client asked to quit\n");
+	}
+
+	// Send the same data back to the client.
+	// FIXME: the socket might not be ready to send yet -- so this could block!
+	// FIXME: and we might not be able to write the entire message in one go...
+	int count = send(sock_, readBuffer_, MESSAGESIZE, 0);
+	if (count != MESSAGESIZE)
+	{
+		printf("send failed\n");
+	}
+
+	// Clear the buffer, ready for the next message.
+	readCount_ = 0;
 }
