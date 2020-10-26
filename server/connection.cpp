@@ -71,15 +71,17 @@ bool Connection::doRead()
 		return true;
 	}
 
-	// Send the same data back to the client.
-	// FIXME: the socket might not be ready to send yet -- so this could block!
-	// FIXME: and we might not be able to write the entire message in one go...
-	count = send(sock_, readBuffer_, MESSAGESIZE, 0);
-	if (count != MESSAGESIZE)
-	{
-		printf("send failed\n");
-		return true;
-	}
+	//// Send the same data back to the client.
+	//// FIXME: the socket might not be ready to send yet -- so this could block!
+	//// FIXME: and we might not be able to write the entire message in one go...
+	//count = send(sock_, readBuffer_, MESSAGESIZE, 0);
+	//if (count != MESSAGESIZE)
+	//{
+	//	printf("send failed\n");
+	//	return true;
+	//}
+
+	//doWrite();
 
 	// Clear the buffer, ready for the next message.
 	readCount_ = 0;
@@ -101,45 +103,15 @@ bool Connection::doWrite()
 {
 //FIXME::
 
-		// Receive as much data from the client as will fit in the buffer.
-	int spaceLeft = (sizeof writeBuffer_) - writeCount_;
-	int count = send(sock_, writeBuffer_ + writeCount_, spaceLeft, 0);
-	if (count <= 0) {
-		printf("Client connection closed or broken\n");
-		return true;
-	}
-
-	// We've successfully write some more data into the buffer.
-	writeCount_ += count;
-
-	if (writeCount_ < MESSAGESIZE) {
-		// ... but we've not received a complete message yet.
-		// So we can't do anything until we receive some more.
-		return false;
-	}
-
-	// We've got a complete message.
-	printf("Received message from the client: '");
-	fwrite(writeBuffer_, 1, MESSAGESIZE, stdout);
-	printf("'\n");
-
-	if (memcmp(writeBuffer_, "quit", 4) == 0) {
-		printf("Client asked to quit\n");
-		return true;
-	}
-
 	// Send the same data back to the client.
 	// FIXME: the socket might not be writey to send yet -- so this could block!
 	// FIXME: and we might not be able to write the entire message in one go...
-	count = send(sock_, writeBuffer_, MESSAGESIZE, 0);
+	int count = send(sock_, readBuffer_, MESSAGESIZE, 0);
 	if (count != MESSAGESIZE)
 	{
 		printf("send failed\n");
 		return true;
 	}
-
-	// Clear the buffer, ready for the next message.
-	writeCount_ = 0;
 
 	return false;
 }
